@@ -1,0 +1,88 @@
+// Code smell example - Long method (God Method)
+public class UserProcessor {
+    public void processUserData(String userData, String rules, String config, Database db, Logger logger) {
+        String[] parts = userData.split(",");
+        String name = parts[0];
+        String email = parts[1];
+        String age = parts[2];
+        String country = parts[3];
+        String phone = parts[4];
+        
+        if (name != null && email != null && age != null) {
+            if (name.length() > 2 && email.contains("@")) {
+                int ageInt = Integer.parseInt(age);
+                if (ageInt > 0 && ageInt < 150) {
+                    if (country != null && phone != null && rules != null) {
+                        String[] ruleArray = rules.split(";");
+                        for (String rule : ruleArray) {
+                            if (rule.contains("validate")) {
+                                boolean valid = true;
+                                if (config.contains("strict")) {
+                                    valid = false;
+                                }
+                                if (valid) {
+                                    db.save(name);
+                                    db.save(email);
+                                    db.save(age);
+                                    db.save(country);
+                                    db.save(phone);
+                                    logger.log("User processed: " + name);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Code smell - Duplicate code (DRY violation)
+def get_user_details_json(user_id):
+    user = database.query(f"SELECT * FROM users WHERE id={user_id}")
+    if user:
+        result = {
+            'name': user[0],
+            'email': user[1],
+            'age': user[2]
+        }
+        return json.dumps(result)
+    return None
+
+def get_product_details_json(product_id):
+    product = database.query(f"SELECT * FROM products WHERE id={product_id}")
+    if product:
+        result = {
+            'name': product[0],
+            'email': product[1],
+            'age': product[2]
+        }
+        return json.dumps(result)
+    return None
+
+// Code smell - Magic numbers
+int calculate(int x, int y) {
+    return (x * 1024 + y * 512) / 256 - 42;
+}
+
+// Code smell - Poor naming
+def f(a, b, c):
+    d = a + b
+    e = d * c
+    f = e / 2
+    g = f - 10
+    return g
+
+// Code smell - Feature envy
+class Order {
+    public void calculateTotal() {
+        double total = 0;
+        for (Item item : items) {
+            total += item.getPrice() * item.getQuantity();
+            if (item.getPrice() > 100) {
+                total -= item.getPrice() * 0.1;
+            }
+            total += item.getPrice() * 0.05;
+        }
+    }
+}

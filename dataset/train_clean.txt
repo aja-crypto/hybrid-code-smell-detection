@@ -1,0 +1,63 @@
+// Clean code example - good practices
+public class DataProcessor {
+    private List<String> data;
+    private Logger logger;
+    
+    public DataProcessor(Logger logger) {
+        this.logger = logger;
+        this.data = new ArrayList<>();
+    }
+    
+    public void addData(String item) {
+        if (item != null && !item.isEmpty()) {
+            data.add(item);
+        }
+    }
+    
+    public List<String> processData() {
+        return data.stream()
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toList());
+    }
+}
+
+// Clean code example - Python
+def calculate_average(numbers: list) -> float:
+    """Calculate average of numbers."""
+    if not numbers:
+        return 0.0
+    return sum(numbers) / len(numbers)
+
+def process_records(records: list) -> dict:
+    """Process records and return summary."""
+    summary = {
+        'count': len(records),
+        'average': calculate_average([r['value'] for r in records]),
+        'valid': all(validate_record(r) for r in records)
+    }
+    return summary
+
+// Clean C++ code
+#include <vector>
+#include <algorithm>
+
+class DataCollection {
+private:
+    std::vector<int> numbers;
+    
+public:
+    void add(int num) {
+        numbers.push_back(num);
+    }
+    
+    double getAverage() const {
+        if (numbers.empty()) return 0.0;
+        return static_cast<double>(sum()) / numbers.size();
+    }
+    
+private:
+    int sum() const {
+        return std::accumulate(numbers.begin(), numbers.end(), 0);
+    }
+};

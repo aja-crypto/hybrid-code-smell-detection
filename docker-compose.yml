@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:latest
+    container_name: code-smell-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-change_me_in_env}
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - code-smell-network
+
+  # Flask Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: code-smell-backend
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: production
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-change_me_in_env}@mongodb:27017/code_smell_detection
+      DEVICE: cpu
+    depends_on:
+      - mongodb
+    networks:
+      - code-smell-network
+    volumes:
+      - ./ml_pipeline/saved_models:/app/ml_pipeline/saved_models
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: code-smell-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://backend:5000/api
+    depends_on:
+      - backend
+    networks:
+      - code-smell-network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+
+networks:
+  code-smell-network:
+    driver: bridge
